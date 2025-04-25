@@ -14,6 +14,7 @@ class Game(BaseModel):
     fen: str
     user: User
 
+
 class GameSummary(BaseModel):
     overall_performance: str
     main_mistakes: list[str]
@@ -24,6 +25,7 @@ class GameSummary(BaseModel):
 class StyleAdvice(BaseModel):
     matched: bool
     advice: str
+
 
 class Continuation(BaseModel):
     move: str

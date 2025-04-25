@@ -1,7 +1,5 @@
 from agents import function_tool
-
-from src.models import Game
-from src.models import GameSummary, StyleAdvice, BestMove
+from src.models import BestMove, Game, GameSummary, StyleAdvice
 
 
 @function_tool
@@ -32,6 +30,7 @@ def generate_summary(
         style_feedback=style_advice.advice,
         suggestions=suggestions,
     )
+
 
 @function_tool
 def evaluate_style(game: Game, moves: list[BestMove]) -> StyleAdvice:

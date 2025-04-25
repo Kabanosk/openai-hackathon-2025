@@ -1,7 +1,6 @@
 from agents import Agent
 from src.tools.formatting_tools import generate_summary
 
-
 summary_agent = Agent(
     name="SummaryAgent",
     instructions=(

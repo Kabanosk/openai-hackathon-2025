@@ -1,15 +1,11 @@
-from typing import List
+from typing import List, Optional
+
 import chess
 import chess.engine
 
 from agents import function_tool
-from src.models import Game
 from src.config import STOCKFISH_PATH
-
-
-from src.models import BestMove, Continuation
-
-from typing import Optional
+from src.models import BestMove, Continuation, Game
 
 
 @function_tool
