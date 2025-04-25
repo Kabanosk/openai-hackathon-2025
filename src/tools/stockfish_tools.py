@@ -1,31 +1,28 @@
 from typing import List
-
 import chess
 import chess.engine
-from pydantic import BaseModel
 
 from agents import function_tool
-from src.agents.game_state import Game
+from src.models import Game
 from src.config import STOCKFISH_PATH
 
 
-class Continuation(BaseModel):
-    move: str
-    score: int
+from src.models import BestMove, Continuation
 
-
-class BestMove(BaseModel):
-    move: str
-    score: int
-    continuations: List[Continuation]
+from typing import Optional
 
 
 @function_tool
 def get_best_moves(
-    game_state: Game, depth: int = 15, multipv: int = 3
+    game: Game, depth: Optional[int] = None, multipv: Optional[int] = None
 ) -> List[BestMove]:
     results: List[BestMove] = []
-    fen = game_state.fen
+    fen = game.fen
+
+    # Domyślne wartości jeśli nie podano
+    depth = depth or 15
+    multipv = multipv or 3
+
     with chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH) as engine:
         board = chess.Board(fen)
         top_moves = engine.analyse(

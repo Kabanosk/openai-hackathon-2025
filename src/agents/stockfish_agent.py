@@ -1,4 +1,5 @@
 from agents import Agent
+from src.agents.style_advisor_agent import style_advisor_agent
 from src.tools.stockfish_tools import get_best_moves
 
 stockfish_analyzer = Agent(
@@ -13,4 +14,5 @@ stockfish_analyzer = Agent(
         "Always suggest best moves and explain why they are good."
     ),
     tools=[get_best_moves],
+    handoffs=[style_advisor_agent],
 )
