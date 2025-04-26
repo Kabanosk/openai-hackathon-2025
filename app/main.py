@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,12 +8,13 @@ from fastapi.templating import Jinja2Templates
 from dataclasses import dataclass
 import asyncio
 
-from app.test import get_result_from_agent, DateIdeaOutput
+from app.agent import get_result_from_agent, DateIdeaOutput
 from app.models import DateForm
 
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+load_dotenv()
 
 
 @dataclass
@@ -25,6 +28,7 @@ class AppState:
         self.places_db: list[PlaceV2] = []
         self.liked_places: set[int] = set()
         self.disliked_places: set[int] = set()
+        self.last_form: DateForm | None = None  # Store last submitted form
 
     def clear_feedback(self):
         self.liked_places.clear()
@@ -88,6 +92,7 @@ async def submit_form(
         date_type=date_type,
     )
 
+    state.last_form = form_data  # Save the form for recalculation
     state.clear_feedback()
     state.places_db = await get_all_places(
         city=form_data.city,
@@ -126,5 +131,15 @@ async def info_place(place_id: int = Form(...)):
 
 @app.post("/recalculate-places")
 async def recalculate_places():
-    # TODO for @zielu: Call AI agent again based on liked_places
+    if state.last_form is None:
+        return RedirectResponse(url="/", status_code=303)
+
+    state.clear_feedback()
+    state.places_db = await get_all_places(
+        city=state.last_form.city,
+        date_str=state.last_form.date_time.strftime("%Y-%m-%d"),
+        person_description="miła, energiczna osoba, lubiąca przygody",
+        interests=", ".join(state.last_form.interests),
+    )
+
     return RedirectResponse(url="/places", status_code=303)
