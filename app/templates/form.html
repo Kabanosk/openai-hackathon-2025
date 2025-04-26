@@ -96,6 +96,16 @@
       font-size: 0.8rem;
       margin-left: auto;
     }
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .hourglass {
+      display: inline-block;
+      animation: rotate 1.2s linear infinite;
+    }
   </style>
 </head>
 <body>
@@ -167,7 +177,7 @@
 
     <button type="submit" class="search-button">wyszukaj</button>
   </form>
-    <div id="loading-modal" style="
+  <div id="loading-modal" style="
     display: none;
     position: fixed;
     top: 0; left: 0;
@@ -186,7 +196,8 @@
       font-weight: bold;
       text-align: center;
     ">
-      ⏳ Trwa generowanie propozycji randki...
+      <div class="hourglass" style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+      Trwa generowanie propozycji randki...
     </div>
   </div>
 
