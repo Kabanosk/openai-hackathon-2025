@@ -361,8 +361,56 @@
   </div>
 
   <script>
+
+    const savedPeopleData = {
+      Zuzia: {
+        name: "Zuzia",
+        age: 25,
+        gender: "female",
+        interests: "art, travel, books",
+        date_type: "coffee",
+        budget: "medium",
+        city: "Warsaw"
+      },
+      Wojtek: {
+        name: "Wojtek",
+        age: 30,
+        gender: "male",
+        interests: "sports, tech, movies",
+        date_type: "cinema",
+        budget: "high",
+        city: "Krakow"
+      }
+    };
+
     document.querySelector("form").addEventListener("submit", function() {
       document.getElementById("loading-modal").style.display = "flex";
+    });
+
+    const savedPeopleSelect = document.getElementById('saved-people');
+    savedPeopleSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      if (selectedValue && savedPeopleData[selectedValue]) {
+        const person = savedPeopleData[selectedValue];
+
+        document.getElementById('name').value = person.name || '';
+        document.getElementById('age').value = person.age || '';
+        document.getElementById('gender').value = person.gender || '';
+        document.getElementById('interests').value = person.interests || '';
+        document.getElementById('date_type').value = person.date_type || '';
+        document.getElementById('budget').value = person.budget || '';
+        document.getElementById('city').value = person.city || '';
+        // datetime-local na razie zostawiamy puste
+      } else {
+        // Jeśli wybierzesz "Select a saved person", to czyścimy formularz
+        document.getElementById('name').value = '';
+        document.getElementById('age').value = '';
+        document.getElementById('gender').value = '';
+        document.getElementById('interests').value = '';
+        document.getElementById('date_type').value = '';
+        document.getElementById('budget').value = '';
+        document.getElementById('city').value = '';
+      }
     });
 
     // Menu functionality
