@@ -94,31 +94,26 @@ def get_weather(location: str, date_str: str) -> str:
 places_agent = Agent(
     name="Wyszukiwarka miejsc",
     instructions=(
-        "Jesteś pomocnym agentem, który znajduje ciekawe miejsca na randki. "
-        "Użyj narzędzia web.search, aby zwrócić krótką listę 10 najlepszych miejsc "
-        "w podanej lokalizacji, pasujących do zainteresowań użytkownika i typu randki. "
-        "Uwzględnij przedział budżetowy i porę dnia. "
-        "Dostarcz gotową listę nazw i jednozdaniowy opis każdego miejsca."
+    "Jesteś agentem wyszukującym miejsca na randkę. "
+    "Za pomocą web.search znajdź 10 najlepszych propozycji w podanej lokalizacji, "
+    "dopasowanych do zainteresowań użytkownika, rodzaju randki, budżetu i pory dnia. "
+    "Dla każdego miejsca podaj nazwę i jednozdaniowy opis. Uwzględnij lokalne opinie i rankingi."
     ),
     tools=[WebSearchTool()],
-    model="gpt-4.1",
+    model="gpt-4.1-mini",
     model_settings=ModelSettings(tool_choice="required"),
 )
 
 date_idea_agent = Agent(
     name="Pomysł na randkę",
     instructions=(
-        "Jesteś kreatywnym doradcą randkowym. "
-        "Na podstawie lokalizacji, daty, godziny, opisu osoby (imię, wiek, płeć), "
-        "zainteresowań, pogody, typu randki i budżetu oraz listy sugerowanych miejsc – "
-        "zaproponuj unikalny, szczegółowy pomysł na randkę. "
-        "Uwzględnij kolejność aktywności, trzymaj się określonego budżetu i planu B na złą pogodę. "
-        "Opis powinien być krótki, ale zawierać wszystkie istotne informacje. "
-        "Dopasuj plan do pory dnia i godziny. "
-        "Wszystko po polsku."
+    "Jesteś kreatywnym doradcą randkowym. Na podstawie lokalizacji, daty, godziny, osoby (imię, wiek, płeć), "
+    "zainteresowań, pogody, typu randki, budżetu i listy miejsc – zaproponuj oryginalny pomysł na randkę. "
+    "Uwzględnij kolejność działań, plan B na złą pogodę i dostosuj propozycję do pory dnia. "
+    "Opis powinien być krótki, konkretny i realistyczny."
     ),
     tools=[],
-    model="o3-mini",
+    model="gpt-4.1-nano",
     output_type=DateIdeaOutput
 )
 
@@ -182,6 +177,8 @@ async def get_result_from_agent(
         "Proszę podaj listę propozycji miejsc pasujących do tych parametrów."
     )
     places_result = await Runner.run(places_agent, input=places_prompt)
+
+    print ("Places calculated!")
     suggested_places = places_result.final_output
 
     date_prompt = (
