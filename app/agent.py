@@ -114,7 +114,7 @@ date_idea_agent = Agent(
         "The description should be short, specific, and realistic."
     ),
     tools=[],
-    model="gpt-o3",
+    model="gpt-4o",
     output_type=DateIdeaOutput
 )
 
