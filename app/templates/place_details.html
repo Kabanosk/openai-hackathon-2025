@@ -1,0 +1,267 @@
+<!-- Save this as app/templates/place_details.html -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Szczegóły randki</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      color: #333;
+    }
+
+    h1 {
+        font-family: 'Tan Kindred', serif;
+        color: #444;
+    }
+
+    h2, h3 {
+      color: #444;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .date-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .date-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .itinerary-title {
+      font-size: 1.5rem;
+      border-bottom: 2px solid #a6c1ee;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-card {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #a6c1ee;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-time {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #6a87cf;
+    }
+
+    .step-place {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .step-address {
+      color: #666;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+
+    .step-transport {
+      background-color: #f0f4ff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-block;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-description {
+      margin-top: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .step-price {
+      text-align: right;
+      margin-top: 0.8rem;
+      font-weight: bold;
+    }
+
+    .budget-summary {
+      font-size: 1.2rem;
+      text-align: right;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .budget-amount {
+      color: #6a87cf;
+      font-size: 1.4rem;
+    }
+
+    .back-button {
+      background-color: white;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1.5rem;
+    }
+
+    .calendar-button {
+        position: relative;
+        background-color: white;
+        color: #333;
+        border: none;
+        border-radius: 30px;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1.5rem;
+        z-index: 0;
+        overflow: hidden;
+    }
+
+    .calendar-button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px; /* Border thickness */
+        border-radius: 30px;
+        background: linear-gradient(to right, #6a87cf, #a6c1ee);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+                mask-composite: exclude;
+        z-index: -1;
+    }
+
+    .calendar-text {
+        font-family: 'Tan Kindred', serif;
+    }
+
+    .calendar-button:hover {
+        background-color: #f0f4ff;
+        transform: scale(1.05);
+    }
+
+    .back-button:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Szczegóły randki</h1>
+
+  <div class="container">
+    {% if place %}
+      <div class="card">
+        <div class="date-header">
+          <h2>{{ place.dateIdeaOutput.title }}</h2>
+        </div>
+
+        <div class="date-description">
+          {{ place.dateIdeaOutput.description }}
+        </div>
+
+        <h3 class="itinerary-title">Plan randki</h3>
+
+        {% for step in place.dateIdeaOutput.itinerary %}
+          <div class="step-card">
+            <div class="step-header">
+              <span class="step-time">{{ step.time }}</span>
+              <span class="step-place">{{ step.place_name }}</span>
+            </div>
+
+            <div class="step-address">{{ step.place_address }}</div>
+
+            <div class="step-transport">
+              <i class="fas fa-walking"></i> {{ step.transport }}
+            </div>
+
+            <div class="step-description">
+              {{ step.description }}
+            </div>
+
+            <div class="step-price">
+              {{ step.price }} zł
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="budget-summary">
+          Łączny budżet: <span class="budget-amount">{{ place.dateIdeaOutput.budget_pln }} zł</span>
+        </div>
+        {% if place %}
+        <a
+            href="https://www.google.com/calendar/render?action=TEMPLATE&text={{ place.dateIdeaOutput.title | urlencode }}&details={{ place.dateIdeaOutput.description | urlencode }}&location={{ place.dateIdeaOutput.itinerary[0].place_address | urlencode }}&dates={{ calendar_dates }}"
+            target="_blank"
+            class="calendar-button"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="20" height="20" style="vertical-align: middle; margin-right: 0.5rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Add to Google Calendar
+        </a>
+        {% endif %}
+      </div>
+      {% if show %}
+      <a href="/places" class="back-button">Powrót do listy miejsc</a>
+      {% endif %}
+    {% else %}
+      <div class="card">
+        <p>Nie znaleziono szczegółów dla tego miejsca.</p>
+        {% if show %}
+        <a href="/places" class="back-button">Powrót do listy miejsc</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
