@@ -148,13 +148,10 @@ async def get_places(request: Request):
 
 @app.post("/like-place")
 async def like_place(place_id: int = Form(...)):
-    print("LIKE?")
     for i in range(3):
-        print(f"TRY {i}")
         if place_id != i:
-            print(f"RM {i}")
             state.dislike_place(place_id)
-    print(f"LIKE {place_id}")
+    state.info_place(place_id)
     state.like_place(place_id)
 
     return RedirectResponse(url="/place-details?show=false", status_code=303)
