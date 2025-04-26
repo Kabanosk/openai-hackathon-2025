@@ -134,7 +134,17 @@
       {% endfor %}
 
 
-        <button type="submit" class="recalculate-button" style="margin-top: auto;">Show more suggestions</button>
+      <form action="/recalculate-places" method="post" style="display:flex;flex-direction:column;align-items:center;">
+        <button type="submit" class="recalculate-button">Show more suggestions</button>
+
+        <div id="loading-modal" style="display:none;position:fixed;inset:0;
+             background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+          <div style="background:#fff;padding:2rem 3rem;border-radius:20px;box-shadow:0 0 20px rgba(0,0,0,.3);font-size:1.2rem;font-weight:bold;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:1rem;">⏳</div>
+            Generating meetup suggestions…
+          </div>
+        </div>
+      </form>
       </form>
 
       <form action="/recalculate-places" method="post" style="display: flex; flex-direction: column; align-items: center;">

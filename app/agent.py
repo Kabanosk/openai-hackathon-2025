@@ -108,7 +108,7 @@ places_agent = Agent(
 date_idea_agent = Agent(
     name="Meetup Idea Generator",
     instructions=(
-        "You are a creative dating advisor. Based on location, date, time, friend (name, age, gender), "
+        "You are a creative dating advisor. Based on location, date, time, companion (name, age, gender), "
         "interests, weather, meetup type, budget, and a list of places – propose an original meet idea. "
         "Include the order of activities, a plan B for bad weather, and adapt the proposal to the time of day. "
         "The description should be short, specific, and realistic."
@@ -138,7 +138,7 @@ async def get_result_from_agent(
 
     weather_summary = get_weather(location, date_str)
 
-    # Build a standardized friend description from available info
+    # Build a standardized companion description from available info
     person_description_parts: List[str] = []
     if partner_name:
         person_description_parts.append(f"{partner_name}")
