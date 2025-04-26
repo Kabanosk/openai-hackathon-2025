@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from models import DateForm, Place
+from app.models import DateForm, Place
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -81,4 +81,4 @@ async def recalculate_places():
     return RedirectResponse(url="/places", status_code=303)
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
