@@ -17,13 +17,26 @@
       padding: 2rem;
     }
 
+    /* Header with logo + title */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      height: 60px; /* adjust as needed */
+      width: auto;
+    }
+
     h1 {
       font-size: 3.5rem;
       color: white;
       text-align: center;
-      margin-bottom: 2rem;
       font-weight: 300;
       letter-spacing: 4px;
+      margin: 0; /* remove default margin so flex alignment is nicer */
     }
 
     .form-container {
@@ -208,7 +221,12 @@
   </style>
 </head>
 <body>
-  <h1>Date Genius</h1>
+  <!-- Header with logo + title -->
+  <div class="header">
+    <img src="{{ url_for('static', path='images/logo.svg') }}" alt="Date Genius logo" class="logo">
+    <h1>Date Genius</h1>
+    <img src="{{ url_for('static', path='images/logo.svg') }}" alt="Date Genius logo" class="logo">
+  </div>
 
   <form action="/submit-date-form" method="post" class="form-container">
     <div class="form-group">
