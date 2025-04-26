@@ -29,14 +29,14 @@ async def get_form(request: Request):
 @app.post("/submit-date-form")
 async def submit_form(
     age: int = Form(...),
-    interests: list[str] = Form(...),
+    interests: str = Form(...),
     date_time: datetime = Form(...),
     city: str = Form(...),
     date_type: str = Form(...),
 ):
     date_form = DateForm(
         age=age,
-        interests=interests,
+        interests=interests.split(","),
         date_time=date_time,
         city=city,
         date_type=date_type,
