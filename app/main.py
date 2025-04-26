@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
@@ -61,7 +61,7 @@ state = AppState()
 
 
 async def get_all_places(
-    city: str, 
+    city: str,
     date_time: datetime,
     partner_name: Optional[str] = None,
     partner_age: Optional[int] = None,
@@ -145,8 +145,12 @@ async def get_places(request: Request):
 
 @app.post("/like-place")
 async def like_place(place_id: int = Form(...)):
+    for i in range(3):
+        if place_id != i:
+             state.dislike_place(place_id)
     state.like_place(place_id)
-    return RedirectResponse(url="/places", status_code=303)
+
+    return RedirectResponse(url="/place-details?show=false", status_code=303)
 
 
 @app.post("/dislike-place")
@@ -160,12 +164,33 @@ async def info_place(place_id: int = Form(...)):
     return RedirectResponse(url="/place-details", status_code=303)
 
 @app.get("/place-details", response_class=HTMLResponse)
-async def get_place_details(request: Request):
+async def get_place_details(request: Request, show: str = "true"):
+    show_bool = show.lower() == "true"
+    place = state.current_place_info
+
+    if place and place.dateIdeaOutput.itinerary:
+        fmt = "%H:%M"
+        itinerary = place.dateIdeaOutput.itinerary
+        start_time = datetime.strptime(itinerary[0].time, fmt)
+        end_time = datetime.strptime(itinerary[-1].time, fmt) + timedelta(hours=1)
+
+        now = datetime.utcnow()
+        start_utc = datetime(now.year, now.month, now.day, start_time.hour, start_time.minute)
+        end_utc = datetime(now.year, now.month, now.day, end_time.hour, end_time.minute)
+
+        start_str = start_utc.strftime("%Y%m%dT%H%M%SZ")
+        end_str = end_utc.strftime("%Y%m%dT%H%M%SZ")
+        calendar_dates = f"{start_str}/{end_str}"
+    else:
+        calendar_dates = ""
+
     return templates.TemplateResponse(
         "place_details.html",
         {
             "request": request,
-            "place": state.current_place_info,
+            "place": place,
+            "show": show_bool,
+            "calendar_dates": calendar_dates
         },
     )
 
