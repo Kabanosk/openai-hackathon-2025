@@ -101,7 +101,7 @@ places_agent = Agent(
         "For each place, provide its name and a one‑sentence description. Consider local reviews and ratings."
     ),
     tools=[WebSearchTool()],
-    model="gpt-4.1-mini",
+    model="gpt-4.1",
     model_settings=ModelSettings(tool_choice="required"),
 )
 
@@ -114,7 +114,7 @@ date_idea_agent = Agent(
         "The description should be short, specific, and realistic."
     ),
     tools=[],
-    model="gpt-4.1-nano",
+    model="gpt-o3",
     output_type=DateIdeaOutput
 )
 

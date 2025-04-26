@@ -158,8 +158,15 @@ async def like_place(place_id: int = Form(...)):
 
 
 @app.post("/dislike-place")
-async def dislike_place(place_id: int = Form(...)):
+async def dislike_place(
+    place_id: int = Form(...),
+    reason: str | None = Form(None)
+):
     state.dislike_place(place_id)
+    if reason:
+        print(f"[feedback] user disliked {place_id}: {reason}")
+        # TODO: push into analytics DB
+
     return RedirectResponse(url="/places", status_code=303)
 
 @app.post("/info-place")

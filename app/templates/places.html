@@ -121,8 +121,9 @@
               <input type="hidden" name="place_id" value="{{ place.id }}">
               <button type="submit" class="button like-button">I like it</button>
             </form>
-            <form action="/dislike-place" method="post" style="display: inline;">
+            <form action="/dislike-place" method="post" style="display:inline;" onsubmit="return addReason(this);">
               <input type="hidden" name="place_id" value="{{ place.id }}">
+              <input type="hidden" name="reason">
               <button type="submit" class="button dislike-button">I don't like it</button>
             </form>
             <form action="/info-place" method="post" style="display: inline;">
@@ -178,6 +179,15 @@
           document.getElementById("loading-modal").style.display = "flex";
         });
       </script>
+
+      <script>
+        function addReason(frm){
+          const why = prompt("What didn’t you like about this suggestion?");
+          if (why === null) return false;
+          frm.reason.value = why.trim();
+          return true;
+        }
+        </script>
 
     {% else %}
       <div class="no-places">
