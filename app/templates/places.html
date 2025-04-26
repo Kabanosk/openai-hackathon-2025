@@ -1,24 +1,139 @@
+<!-- Save this as app/templates/places.html -->
 <!DOCTYPE html>
-<html>
-<head><title>Places for Your Date</title></head>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sugerowane miejsca na randkę</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 2rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .places-container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .place-card {
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .place-card h2 {
+      margin-top: 0;
+      color: #444;
+    }
+
+    .place-card p {
+      margin-bottom: 1.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .button {
+      padding: 0.5rem 1.5rem;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .like-button {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .dislike-button {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .recalculate-button {
+      margin-top: 2rem;
+      align-self: center;
+      background-color: #2196F3;
+      color: white;
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .button:hover, .recalculate-button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .no-places {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
 <body>
-    <h1>Proposed Places</h1>
-    {% for place in places %}
-        <div style="border: 1px solid #000; margin: 10px; padding: 10px;">
-            <h2>{{ place.name }}</h2>
-            <p>{{ place.description }}</p>
-            <form action="/like-place" method="post" style="display:inline;">
-                <input type="hidden" name="place_id" value="{{ place.id }}">
-                <button type="submit">I like it, show me similar</button>
+  <h1>Sugerowane miejsca na randkę</h1>
+
+  <div class="places-container">
+    {% if places %}
+      {% for place in places %}
+        <div class="place-card">
+          <h2>{{ place.name }}</h2>
+          <p>{{ place.description }}</p>
+          <div class="button-group">
+            <form action="/like-place" method="post" style="display: inline;">
+              <input type="hidden" name="place_id" value="{{ place.id }}">
+              <button type="submit" class="button like-button">Podoba mi się</button>
             </form>
-            <form action="/dislike-place" method="post" style="display:inline;">
-                <input type="hidden" name="place_id" value="{{ place.id }}">
-                <button type="submit">Don't show again</button>
+            <form action="/dislike-place" method="post" style="display: inline;">
+              <input type="hidden" name="place_id" value="{{ place.id }}">
+              <button type="submit" class="button dislike-button">Nie podoba mi się</button>
             </form>
+          </div>
         </div>
-    {% endfor %}
-    <form action="/recalculate-places" method="post">
-        <button type="submit">Recalculate Suggestions</button>
-    </form>
+      {% endfor %}
+
+      <form action="/recalculate-places" method="post">
+        <button type="submit" class="recalculate-button">Pokaż więcej sugestii</button>
+      </form>
+    {% else %}
+      <div class="no-places">
+        <p>Brak dostępnych sugestii miejsc. Spróbuj zmienić kryteria wyszukiwania.</p>
+        <a href="/" style="display: inline-block; margin-top: 1rem; color: #2196F3; text-decoration: none;">Wróć do formularza</a>
+      </div>
+    {% endif %}
+  </div>
 </body>
 </html>

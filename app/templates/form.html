@@ -1,20 +1,171 @@
+<!-- Save this as app/templates/form.html -->
 <!DOCTYPE html>
-<html>
-<head><title>Plan Your Date</title></head>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gdzie na randkę</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      color: white;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 2rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .form-group {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      padding: 0.75rem 1.5rem;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-group.full-width {
+      width: 100%;
+    }
+
+    input, select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 0.5rem;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .search-button {
+      margin-top: 2rem;
+      align-self: flex-end;
+      background-color: white;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .search-button:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .interest-tag {
+      background-color: #6a87cf;
+      color: white;
+      border-radius: 20px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      margin-left: auto;
+    }
+  </style>
+</head>
 <body>
-    <h1>Plan Your Date</h1>
-    <form action="/submit-date-form" method="post">
-        Age: <input type="number" name="age"><br><br>
-        Interests (comma separated): <input type="text" name="interests"><br><br>
-        Date and Time: <input type="datetime-local" name="date_time"><br><br>
-        City: <input type="text" name="city"><br><br>
-        Date Type:
-        <select name="date_type">
-            <option value="first">First Date</option>
-            <option value="anniversary">Anniversary</option>
-            <option value="casual">Casual</option>
-        </select><br><br>
-        <input type="submit" value="Submit">
-    </form>
+  <h1>Gdzie na randkę</h1>
+
+  <form action="/submit-date-form" method="post" class="form-container">
+    <div class="form-group full-width">
+      <label for="name">Imię partnerki/partnera:</label>
+      <input type="text" id="name" name="name" placeholder="">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="age">Wiek partnerki/partnera:</label>
+        <input type="number" id="age" name="age" min="18" required>
+      </div>
+
+      <div class="form-group">
+        <label for="gender">Płeć partnerki/partnera:</label>
+        <select id="gender" name="gender">
+          <option value="">Wybierz</option>
+          <option value="kobieta">Kobieta</option>
+          <option value="mężczyzna">Mężczyzna</option>
+          <option value="inna">Inna</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="interests">Zainteresowania partnerki/partnera:</label>
+      <input type="text" id="interests" name="interests" placeholder="np. muzyka, sztuka, sport" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="date_type">Typ randki:</label>
+        <select id="date_type" name="date_type" required>
+          <option value="">Wybierz</option>
+          <option value="kolacja">Kolacja</option>
+          <option value="kino">Kino</option>
+          <option value="spacer">Spacer</option>
+          <option value="kawa">Kawa</option>
+          <option value="aktywna">Aktywna</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="budget">Budżet:</label>
+        <select id="budget" name="budget">
+          <option value="">Wybierz</option>
+          <option value="niski">Niski (do 50 zł)</option>
+          <option value="sredni">Średni (50-150 zł)</option>
+          <option value="wysoki">Wysoki (powyżej 150 zł)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="city">Miasto:</label>
+        <input type="text" id="city" name="city" placeholder="" required>
+      </div>
+
+      <div class="form-group">
+        <label for="date_time">Data i godzina:</label>
+        <input type="datetime-local" id="date_time" name="date_time" required>
+      </div>
+    </div>
+
+    <button type="submit" class="search-button">wyszukaj</button>
+  </form>
 </body>
 </html>
