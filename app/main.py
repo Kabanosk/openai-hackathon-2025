@@ -38,6 +38,10 @@ class AppState:
         self.disliked_places.add(place_id)
         self.liked_places.discard(place_id)
 
+    def info_place(self, place_id: int):
+        # @ZIELU TODO
+        ...
+
     def get_available_places(self):
         return [p for p in self.places_db if p.id not in self.disliked_places]
 
@@ -112,6 +116,11 @@ async def like_place(place_id: int = Form(...)):
 @app.post("/dislike-place")
 async def dislike_place(place_id: int = Form(...)):
     state.dislike_place(place_id)
+    return RedirectResponse(url="/places", status_code=303)
+
+@app.post("/info-place")
+async def info_place(place_id: int = Form(...)):
+    state.info_place(place_id)
     return RedirectResponse(url="/places", status_code=303)
 
 

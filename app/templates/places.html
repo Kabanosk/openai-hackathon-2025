@@ -72,6 +72,11 @@
       color: white;
     }
 
+    .info-button {
+      background-color: #98b2e9;
+      color: white;
+    }
+
     .dislike-button {
       background-color: #f44336;
       color: white;
@@ -121,6 +126,10 @@
               <input type="hidden" name="place_id" value="{{ place.id }}">
               <button type="submit" class="button dislike-button">Nie podoba mi się</button>
             </form>
+            <form action="/like-place" method="post" style="display: inline;">
+                <input type="hidden" name="place_id" value="{{ place.id }}">
+                <button type="submit" class="button info-button">Give me more</button>
+              </form>
           </div>
         </div>
       {% endfor %}
