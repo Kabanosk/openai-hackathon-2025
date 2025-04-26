@@ -95,9 +95,9 @@ def get_weather(location: str, date_str: str) -> str:
 places_agent = Agent(
     name="Place Finder",
     instructions=(
-        "You are an agent that searches for date spots. "
+        "You are an agent that searches for meetup spots. "
         "Using web.search, find the 10 best suggestions in the provided location, "
-        "tailored to the user's interests, date type, budget, and time of day. "
+        "tailored to the user's interests, meetup type, budget, and time of day. "
         "For each place, provide its name and a one‑sentence description. Consider local reviews and ratings."
     ),
     tools=[WebSearchTool()],
@@ -106,10 +106,10 @@ places_agent = Agent(
 )
 
 date_idea_agent = Agent(
-    name="Date Idea Generator",
+    name="Meetup Idea Generator",
     instructions=(
-        "You are a creative dating advisor. Based on location, date, time, partner (name, age, gender), "
-        "interests, weather, date type, budget, and a list of places – propose an original date idea. "
+        "You are a creative dating advisor. Based on location, date, time, friend (name, age, gender), "
+        "interests, weather, meetup type, budget, and a list of places – propose an original meet idea. "
         "Include the order of activities, a plan B for bad weather, and adapt the proposal to the time of day. "
         "The description should be short, specific, and realistic."
     ),
@@ -138,7 +138,7 @@ async def get_result_from_agent(
 
     weather_summary = get_weather(location, date_str)
 
-    # Build a standardized partner description from available info
+    # Build a standardized friend description from available info
     person_description_parts: List[str] = []
     if partner_name:
         person_description_parts.append(f"{partner_name}")
@@ -187,7 +187,7 @@ async def get_result_from_agent(
         f"Interests: {interests}\n"
         f"Suggested places: {suggested_places}\n"
         f"Weather: {weather_summary}\n"
-        "Please propose a date idea."
+        "Please propose a meetup idea."
     )
     date_result = await Runner.run(date_idea_agent, input=date_prompt)
 

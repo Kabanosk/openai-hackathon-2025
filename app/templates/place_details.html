@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
-  <title>Date Details</title>
+  <title>Meetup Details</title>
   <style>
     body {
       margin: 0;
@@ -278,7 +278,7 @@
   </script>
 
 
-  <h1>Date Details</h1>
+  <h1>Meetup Details</h1>
 
   <div class="container">
     {% if place %}
@@ -291,7 +291,7 @@
           {{ place.dateIdeaOutput.description }}
         </div>
 
-        <h3 class="itinerary-title">Date Itinerary</h3>
+        <h3 class="itinerary-title">Meetup Itinerary</h3>
 
         {% for step in place.dateIdeaOutput.itinerary %}
           <div class="step-card">
