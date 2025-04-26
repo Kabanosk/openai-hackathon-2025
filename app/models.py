@@ -22,6 +22,9 @@ class Place(BaseModel):
     name: str
     description: str
 
+class Reservation(BaseModel):
+    feedback: str
+    booking_url: str
 
 class PlaceFeedback(BaseModel):
     place_id: int

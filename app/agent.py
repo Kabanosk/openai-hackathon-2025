@@ -123,6 +123,7 @@ reservation_agent = Agent(
         "You are an agent that finds available dates and makes reservation. "
         "Using web.search, find tickes or first available date, "
         "tailored to the user's interests, meetup type, budget, and time of day. "
+        "Now we are asking for "
     ),
     tools=[WebSearchTool()],
     model="gpt-4.1",
