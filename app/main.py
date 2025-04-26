@@ -18,9 +18,9 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 load_dotenv()
 
 app.mount(
-    "/static",                           
+    "/static",
     StaticFiles(directory="app/static"),
-    name="static" 
+    name="static"
 )
 
 @dataclass
@@ -50,10 +50,8 @@ class AppState:
         self.liked_places.discard(place_id)
 
     def info_place(self, place_id: int):
-        print(f"LOOK FOR ID {place_id}")
         for place in self.places_db:
             if place.id == place_id:
-                print(f"FOUND {place_id}")
                 self.current_place_info = place
                 return place
         return None

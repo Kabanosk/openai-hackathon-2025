@@ -108,8 +108,6 @@
   </style>
 </head>
 <body>
-  <form action="/recalculate-places" method="post" style="display: flex; flex-direction: column; align-items: center;">
-
   <h1>Suggested Date Spots</h1>
 
   <div class="places-container">
@@ -135,8 +133,11 @@
         </div>
       {% endfor %}
 
+
         <button type="submit" class="recalculate-button" style="margin-top: auto;">Show more suggestions</button>
       </form>
+
+      <form action="/recalculate-places" method="post" style="display: flex; flex-direction: column; align-items: center;">
 
       <div id="loading-modal" style="
         display: none;
