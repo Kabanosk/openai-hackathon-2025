@@ -96,7 +96,8 @@ places_agent = Agent(
     instructions=(
         "Jesteś pomocnym agentem, który znajduje ciekawe miejsca na randki. "
         "Użyj narzędzia web.search, aby zwrócić krótką listę 10 najlepszych miejsc "
-        "w podanej lokalizacji, pasujących do zainteresowań użytkownika. "
+        "w podanej lokalizacji, pasujących do zainteresowań użytkownika i typu randki. "
+        "Uwzględnij przedział budżetowy i porę dnia. "
         "Dostarcz gotową listę nazw i jednozdaniowy opis każdego miejsca."
     ),
     tools=[WebSearchTool()],
@@ -108,10 +109,12 @@ date_idea_agent = Agent(
     name="Pomysł na randkę",
     instructions=(
         "Jesteś kreatywnym doradcą randkowym. "
-        "Na podstawie lokalizacji, daty, opisu osoby, zainteresowań, pogody i "
-        "listy sugerowanych miejsc – zaproponuj unikalny, szczegółowy pomysł "
-        "na randkę. Uwzględnij kolejność aktywności, budżet i plan B na złą pogodę. "
+        "Na podstawie lokalizacji, daty, godziny, opisu osoby (imię, wiek, płeć), "
+        "zainteresowań, pogody, typu randki i budżetu oraz listy sugerowanych miejsc – "
+        "zaproponuj unikalny, szczegółowy pomysł na randkę. "
+        "Uwzględnij kolejność aktywności, trzymaj się określonego budżetu i planu B na złą pogodę. "
         "Opis powinien być krótki, ale zawierać wszystkie istotne informacje. "
+        "Dopasuj plan do pory dnia i godziny. "
         "Wszystko po polsku."
     ),
     tools=[],
@@ -127,26 +130,66 @@ date_idea_agent = Agent(
 async def get_result_from_agent(
     location: str,
     date_str: str,
-    person_description: str,
-    interests: str
+    time_str: str = None,
+    partner_name: str = None,
+    partner_age: int = None,
+    partner_gender: str = None,
+    date_type: str = None,
+    budget: str = None,
+    interests: str = None
 ) -> DateIdeaOutput:
     """Główna funkcja orchestrująca cały proces generowania randki."""
 
     weather_summary = get_weather(location, date_str)
+    
+    # Create a standardized person description using all available information
+    person_description_parts = []
+    if partner_name:
+        person_description_parts.append(f"{partner_name}")
+    if partner_age:
+        person_description_parts.append(f"{partner_age} lat")
+    if partner_gender:
+        person_description_parts.append(partner_gender)
+    
+    # Set default description if no specific details provided
+    if not person_description_parts:
+        person_description = "miła, energiczna osoba, lubiąca przygody"
+    else:
+        person_description = ", ".join(person_description_parts)
+    
+    # Format date and time information
+    datetime_info = date_str
+    if time_str:
+        datetime_info = f"{date_str} o godz. {time_str}"
+    
+    # Format budget information
+    budget_info = ""
+    if budget:
+        budget_info = f"Budżet: {budget}"
+    
+    # Format date type information
+    date_type_info = ""
+    if date_type:
+        date_type_info = f"Typ randki: {date_type}"
 
     places_prompt = (
         f"Lokalizacja: {location}\n"
+        f"Data i czas: {datetime_info}\n"
+        f"{date_type_info}\n" if date_type else ""
+        f"{budget_info}\n" if budget else ""
         f"Zainteresowania: {interests}\n"
         f"Pogoda: {weather_summary}\n"
-        "Proszę podaj listę propozycji miejsc."
+        "Proszę podaj listę propozycji miejsc pasujących do tych parametrów."
     )
     places_result = await Runner.run(places_agent, input=places_prompt)
     suggested_places = places_result.final_output
 
     date_prompt = (
         f"Lokalizacja: {location}\n"
-        f"Data: {date_str}\n"
+        f"Data i czas: {datetime_info}\n"
         f"Opis osoby: {person_description}\n"
+        f"{date_type_info}\n" if date_type else ""
+        f"{budget_info}\n" if budget else ""
         f"Zainteresowania: {interests}\n"
         f"Sugerowane miejsca: {suggested_places}\n"
         f"Pogoda: {weather_summary}\n"

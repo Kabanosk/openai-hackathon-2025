@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dataclasses import dataclass
 import asyncio
+from typing import List, Optional
 
 from app.agent import get_result_from_agent, DateIdeaOutput
 from app.models import DateForm
@@ -53,13 +54,27 @@ class AppState:
 state = AppState()
 
 
-async def get_all_places(city: str, date_str: str, person_description: str, interests: str) -> list[PlaceV2]:
+async def get_all_places(
+    city: str, 
+    date_time: datetime,
+    partner_name: Optional[str] = None,
+    partner_age: Optional[int] = None,
+    partner_gender: Optional[str] = None,
+    interests: Optional[List[str]] = None,
+    date_type: Optional[str] = None,
+    budget: Optional[str] = None
+) -> list[PlaceV2]:
     tasks = [
         get_result_from_agent(
             location=city,
-            date_str=date_str,
-            person_description=person_description,
-            interests=interests,
+            date_str=date_time.strftime("%Y-%m-%d"),
+            time_str=date_time.strftime("%H:%M"),
+            partner_name=partner_name,
+            partner_age=partner_age,
+            partner_gender=partner_gender,
+            date_type=date_type,
+            budget=budget,
+            interests=", ".join(interests) if interests else ""
         )
         for _ in range(3)
     ]
@@ -78,27 +93,37 @@ async def get_form(request: Request):
 
 @app.post("/submit-date-form")
 async def submit_form(
+    name: Optional[str] = Form(...),
     age: int = Form(...),
+    gender: Optional[str] = Form(...),
     interests: str = Form(...),
     date_time: datetime = Form(...),
     city: str = Form(...),
     date_type: str = Form(...),
+    budget: Optional[str] = Form(...),
 ):
     form_data = DateForm(
+        name=name,
         age=age,
+        gender=gender,
         interests=interests.split(","),
         date_time=date_time,
         city=city,
         date_type=date_type,
+        budget=budget,
     )
 
     state.last_form = form_data  # Save the form for recalculation
     state.clear_feedback()
     state.places_db = await get_all_places(
         city=form_data.city,
-        date_str=form_data.date_time.strftime("%Y-%m-%d"),
-        person_description="miła, energiczna osoba, lubiąca przygody",
-        interests=", ".join(form_data.interests),
+        date_time=form_data.date_time,
+        partner_name=form_data.name,
+        partner_age=form_data.age,
+        partner_gender=form_data.gender,
+        interests=form_data.interests,
+        date_type=form_data.date_type,
+        budget=form_data.budget
     )
 
     return RedirectResponse(url="/places", status_code=303)
@@ -137,9 +162,13 @@ async def recalculate_places():
     state.clear_feedback()
     state.places_db = await get_all_places(
         city=state.last_form.city,
-        date_str=state.last_form.date_time.strftime("%Y-%m-%d"),
-        person_description="miła, energiczna osoba, lubiąca przygody",
-        interests=", ".join(state.last_form.interests),
+        date_time=state.last_form.date_time,
+        partner_name=state.last_form.name,
+        partner_age=state.last_form.age,
+        partner_gender=state.last_form.gender,
+        interests=state.last_form.interests,
+        date_type=state.last_form.date_type,
+        budget=state.last_form.budget
     )
 
     return RedirectResponse(url="/places", status_code=303)
