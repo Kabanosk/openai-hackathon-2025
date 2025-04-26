@@ -9,31 +9,26 @@ from dataclasses import dataclass
 import asyncio
 from typing import List, Optional
 
-from app.agent import get_result_from_agent, DateIdeaOutput
+from app.agent import get_result_from_agent, DateIdeaOutput, check_reservation_availability
 from app.models import DateForm
-
 
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 load_dotenv()
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
-
 @dataclass
 class PlaceV2:
     id: int
     dateIdeaOutput: DateIdeaOutput
-
 
 class AppState:
     def __init__(self):
         self.places_db: list[PlaceV2] = []
         self.liked_places: set[int] = set()
         self.disliked_places: set[int] = set()
-        self.last_form: DateForm | None = None
-        self.current_place_info = None
+        self.last_form: Optional[DateForm] = None
+        self.current_place_info: Optional[PlaceV2] = None
 
     def clear_feedback(self):
         self.liked_places.clear()
@@ -57,9 +52,7 @@ class AppState:
     def get_available_places(self):
         return [p for p in self.places_db if p.id not in self.disliked_places]
 
-
 state = AppState()
-
 
 async def get_all_places(
     city: str,
@@ -86,60 +79,11 @@ async def get_all_places(
         for _ in range(3)
     ]
     results = await asyncio.gather(*tasks)
-
     return [PlaceV2(id=i, dateIdeaOutput=result) for i, result in enumerate(results)]
-
-
-async def check_reservation_availability(location, date_time, party_size, budget, special_requests):
-    # Create the input prompt for the agent
-    import asyncio
-    from app.agent import reservation_agent
-    from agents import Agent, Runner, WebSearchTool
-    from agents.model_settings import ModelSettings
-    from app.models import Reservation
-
-    places_prompt = (
-        f"Location: {location}\n"
-        f"date_str: { date_time.strftime('%Y-%m-%d')}\n"
-        f"time_str: {date_time.strftime('%H:%M')}\n"
-        f"party_size: {party_size}\n"
-        f"budget: {budget}\n"
-    )
-
-    ins = (
-        "You are an agent that finds available dates and makes reservation. "
-        "Using web.search, find tickes or first available date (but you can ignore time), "
-        "tailored to the user's interests, meetup type, budget, and time of day. "
-        "If it is possible to buy tickets then take 1 normal ticket, go to checkout and "
-        "return link where we just need to pay for it"
-        "Now we are asking for " + special_requests
-    )
-
-    dynamic_agent = Agent(
-        name="Reservation Finder",
-        instructions=ins,
-        tools=[WebSearchTool()],
-        model="gpt-4.1",
-        model_settings=ModelSettings(tool_choice="required"),
-        output_type=Reservation
-    )
-
-    try:
-        response = await Runner.run(dynamic_agent, places_prompt)
-        if response and response.final_output.booking_url != None:
-            return response.final_output.booking_url
-        return None
-    except Exception as e:
-        print(f"Error checking reservation availability: {e}")
-        return None
-
 
 @app.get("/", response_class=HTMLResponse)
 async def welcome(request: Request):
-    """Landing page with two options."""
-    return templates.TemplateResponse(
-        "welcome.html", {"request": request, "user_name": "David"}
-    )
+    return templates.TemplateResponse("welcome.html", {"request": request, "user_name": "David"})
 
 @app.get("/reserve", response_class=HTMLResponse)
 async def show_reserve(request: Request):
@@ -151,31 +95,24 @@ async def submit_reservation(
     date_time: datetime = Form(...),
     party_size: int = Form(...),
     budget: str = Form(...),
-    special_requests: str | None = Form(None)
+    special_requests: Optional[str] = Form(None)
 ):
     booking_url = await check_reservation_availability(location, date_time, party_size, budget, special_requests)
-    print("reservation:", location, date_time, party_size, budget, special_requests)
 
-    print("Found link ", booking_url)
     if booking_url:
         status = "Reservation available! You can proceed with booking."
         return RedirectResponse(url=booking_url, status_code=200)
     else:
         status = "Unfortunately, no availability for this date and location."
-        print(status)
         return RedirectResponse(url="/", status_code=303)
 
 @app.get("/reservation-status", response_class=HTMLResponse)
 async def reservation_status(request: Request, status: str):
-    return templates.TemplateResponse("reservation_status.html", {
-        "request": request,
-        "status": status  # Pass the reservation status to be displayed
-    })
+    return templates.TemplateResponse("reservation_status.html", {"request": request, "status": status})
 
 @app.get("/discover", response_class=HTMLResponse)
 async def get_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
-
 
 @app.post("/submit-date-form")
 async def submit_form(
@@ -214,17 +151,9 @@ async def submit_form(
 
     return RedirectResponse(url="/places", status_code=303)
 
-
 @app.get("/places", response_class=HTMLResponse)
 async def get_places(request: Request):
-    return templates.TemplateResponse(
-        "places.html",
-        {
-            "request": request,
-            "places": state.get_available_places(),
-        },
-    )
-
+    return templates.TemplateResponse("places.html", {"request": request, "places": state.get_available_places()})
 
 @app.post("/like-place")
 async def like_place(place_id: int = Form(...)):
@@ -236,22 +165,18 @@ async def like_place(place_id: int = Form(...)):
 
     return RedirectResponse(url="/place-details?show=false", status_code=303)
 
-
 @app.post("/dislike-place")
-async def dislike_place(place_id: int = Form(...), reason: str | None = Form(None)):
+async def dislike_place(place_id: int = Form(...), reason: Optional[str] = Form(None)):
     state.dislike_place(place_id)
     if reason:
         print(f"[feedback] user disliked {place_id}: {reason}")
-        # TODO: push into analytics DB
 
     return RedirectResponse(url="/places", status_code=303)
-
 
 @app.post("/info-place")
 async def info_place(place_id: int = Form(...)):
     state.info_place(place_id)
     return RedirectResponse(url="/place-details", status_code=303)
-
 
 @app.get("/place-details", response_class=HTMLResponse)
 async def get_place_details(request: Request, show: str = "true"):
@@ -265,9 +190,7 @@ async def get_place_details(request: Request, show: str = "true"):
         end_time = datetime.strptime(itinerary[-1].time, fmt) + timedelta(hours=1)
 
         now = datetime.utcnow()
-        start_utc = datetime(
-            now.year, now.month, now.day, start_time.hour, start_time.minute
-        )
+        start_utc = datetime(now.year, now.month, now.day, start_time.hour, start_time.minute)
         end_utc = datetime(now.year, now.month, now.day, end_time.hour, end_time.minute)
 
         start_str = start_utc.strftime("%Y%m%dT%H%M%SZ")
@@ -276,20 +199,16 @@ async def get_place_details(request: Request, show: str = "true"):
     else:
         calendar_dates = ""
 
-    return templates.TemplateResponse(
-        "place_details.html",
-        {
-            "request": request,
-            "place": place,
-            "show": show_bool,
-            "calendar_dates": calendar_dates,
-        },
-    )
-
+    return templates.TemplateResponse("place_details.html", {
+        "request": request,
+        "place": place,
+        "show": show_bool,
+        "calendar_dates": calendar_dates,
+    })
 
 @app.post("/recalculate-places")
 async def recalculate_places():
-    if state.last_form is None:
+    if not state.last_form:
         return RedirectResponse(url="/", status_code=303)
 
     state.clear_feedback()

@@ -113,7 +113,7 @@ date_idea_agent = Agent(
         "The description should be short, specific, and realistic."
     ),
     tools=[],
-    model="gpt-4o",
+    model="o3",
     output_type=DateIdeaOutput
 )
 
@@ -129,6 +129,47 @@ reservation_agent = Agent(
     model="gpt-4.1",
     model_settings=ModelSettings(tool_choice="required"),
 )
+
+async def check_reservation_availability(location: str, date_time: datetime, party_size: int, budget: str, special_requests: Optional[str] = None) -> Optional[str]:
+    from app.agent import reservation_agent
+    from agents import Agent, Runner, WebSearchTool
+    from agents.model_settings import ModelSettings
+    from app.models import Reservation
+
+    places_prompt = (
+        f"Location: {location}\n"
+        f"date_str: {date_time.strftime('%Y-%m-%d')}\n"
+        f"time_str: {date_time.strftime('%H:%M')}\n"
+        f"party_size: {party_size}\n"
+        f"budget: {budget}\n"
+    )
+
+    ins = (
+        "You are an agent that finds available dates and makes reservation. "
+        "Using web.search, find tickets or first available date (but you can ignore time), "
+        "tailored to the user's interests, meetup type, budget, and time of day. "
+        "If it is possible to buy tickets, take 1 normal ticket, go to checkout and "
+        "return link where we just need to pay for it. Now we are asking for " + special_requests
+    )
+
+    dynamic_agent = Agent(
+        name="Reservation Finder",
+        instructions=ins,
+        tools=[WebSearchTool()],
+        model="gpt-4.1",
+        model_settings=ModelSettings(tool_choice="required"),
+        output_type=Reservation
+    )
+
+    try:
+        response = await Runner.run(dynamic_agent, places_prompt)
+        if response and response.final_output.booking_url:
+            return response.final_output.booking_url
+        return None
+    except Exception as e:
+        print(f"Error checking reservation availability: {e}")
+        return None
+
 
 # ----------------------------------------------------------------------------
 # Main Logic
