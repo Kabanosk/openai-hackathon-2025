@@ -227,6 +227,39 @@
       background-color: #f0f0f0;
       transform: scale(1.05);
     }
+
+    .reserve-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .bell-icon {
+      margin-left: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .bell-icon::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px; /* Border thickness */
+        border-radius: 30px;
+        background: linear-gradient(to right, #6a87cf, #a6c1ee);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+                mask-composite: exclude;
+        z-index: -1;
+    }
+
+    .bell-icon:hover {
+      background-color: #f0f4ff;
+      transform: scale(1.2);
+    }
+
+
   </style>
 </head>
 <body>
@@ -241,7 +274,7 @@
         button.textContent = "Reserved";
       }, 3000);
     }
-    // Zielu TODO połącz z agentem, zmień stan kiedy agent zwróci respone?
+    // Zielu TODO connect with the agent, change the state when the agent returns a response
   </script>
 
 
@@ -279,8 +312,15 @@
 
             <div class="step-price">
               {% if step.price > 0 %}
-              <button class="reserved-button" onclick="reservePlace(this)">Reserve</button>
-              {% endif %}
+              <div class="reserve-container">
+                <button class="reserved-button" onclick="reservePlace(this)">Reserve</button>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="20" height="20" class="bell-icon">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159a2.032 2.032 0 01-.595 1.437L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </div>
+            {% endif %}
+
+
               {{ step.price }} PLN
 
             </div>
