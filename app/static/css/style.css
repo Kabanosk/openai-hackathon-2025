@@ -1,0 +1,11 @@
+@font-face {
+    font-family: "MelonCamp";
+    src:
+      url("../fonts/melon_camp/Melon\ Camp.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+body {
+    font-family: "MelonCamp", sans-serif;   
+    }

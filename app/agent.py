@@ -33,8 +33,9 @@ class DateIdeaOutput:
 # ----------------------------------------------------------------------------
 # Weather Utility
 # ----------------------------------------------------------------------------
+
 def geocode_city(city_name: str) -> tuple[float, float]:
-    """Zwraca współrzędne geograficzne (lat, lon) na podstawie nazwy miasta."""
+    """Returns geographic coordinates (lat, lon) for a given city name."""
     url = "https://nominatim.openstreetmap.org/search"
     params = {
         "q": city_name,
@@ -42,7 +43,7 @@ def geocode_city(city_name: str) -> tuple[float, float]:
         "limit": 1
     }
     headers = {
-        "User-Agent": "DatePlannerApp/1.0 (kontakt@twojadomena.pl)"  # <-- Replace with your contact info
+        "User-Agent": "DatePlannerApp/1.0 (contact@yourdomain.com)"  # <-- Replace with your contact info
     }
 
     try:
@@ -50,16 +51,16 @@ def geocode_city(city_name: str) -> tuple[float, float]:
         response.raise_for_status()
         data = response.json()
         if not data:
-            raise ValueError(f"Nie znaleziono współrzędnych dla: {city_name}")
+            raise ValueError(f"Coordinates not found for: {city_name}")
         lat = float(data[0]["lat"])
         lon = float(data[0]["lon"])
         return lat, lon
     except requests.RequestException as e:
-        raise RuntimeError(f"Błąd pobierania współrzędnych: {e}")
+        raise RuntimeError(f"Error fetching coordinates: {e}")
 
 
 def get_weather(location: str, date_str: str) -> str:
-    """Zwraca opis pogody dla podanej lokalizacji i daty."""
+    """Returns a brief weather description for the given location and date."""
 
     lat, lon = geocode_city(location)
     date_obj = datetime.fromisoformat(date_str)
@@ -75,7 +76,7 @@ def get_weather(location: str, date_str: str) -> str:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
     except requests.RequestException as exc:
-        raise RuntimeError(f"Błąd pobierania prognozy: {exc}")
+        raise RuntimeError(f"Error fetching weather forecast: {exc}")
 
     data = response.json()
     temps = data["hourly"]["temperature_2m"]
@@ -84,7 +85,7 @@ def get_weather(location: str, date_str: str) -> str:
     avg_temp = sum(temps) / len(temps)
     max_prec = max(prec_probs)
 
-    return f"Średnia temperatura około {avg_temp:.0f} °C; szansa opadów do {max_prec:.0f}%."
+    return f"Average temperature around {avg_temp:.0f} °C; chance of precipitation up to {max_prec:.0f}%."
 
 
 # ----------------------------------------------------------------------------
@@ -92,12 +93,12 @@ def get_weather(location: str, date_str: str) -> str:
 # ----------------------------------------------------------------------------
 
 places_agent = Agent(
-    name="Wyszukiwarka miejsc",
+    name="Place Finder",
     instructions=(
-    "Jesteś agentem wyszukującym miejsca na randkę. "
-    "Za pomocą web.search znajdź 10 najlepszych propozycji w podanej lokalizacji, "
-    "dopasowanych do zainteresowań użytkownika, rodzaju randki, budżetu i pory dnia. "
-    "Dla każdego miejsca podaj nazwę i jednozdaniowy opis. Uwzględnij lokalne opinie i rankingi."
+        "You are an agent that searches for date spots. "
+        "Using web.search, find the 10 best suggestions in the provided location, "
+        "tailored to the user's interests, date type, budget, and time of day. "
+        "For each place, provide its name and a one‑sentence description. Consider local reviews and ratings."
     ),
     tools=[WebSearchTool()],
     model="gpt-4.1-mini",
@@ -105,12 +106,12 @@ places_agent = Agent(
 )
 
 date_idea_agent = Agent(
-    name="Pomysł na randkę",
+    name="Date Idea Generator",
     instructions=(
-    "Jesteś kreatywnym doradcą randkowym. Na podstawie lokalizacji, daty, godziny, osoby (imię, wiek, płeć), "
-    "zainteresowań, pogody, typu randki, budżetu i listy miejsc – zaproponuj oryginalny pomysł na randkę. "
-    "Uwzględnij kolejność działań, plan B na złą pogodę i dostosuj propozycję do pory dnia. "
-    "Opis powinien być krótki, konkretny i realistyczny."
+        "You are a creative dating advisor. Based on location, date, time, partner (name, age, gender), "
+        "interests, weather, date type, budget, and a list of places – propose an original date idea. "
+        "Include the order of activities, a plan B for bad weather, and adapt the proposal to the time of day. "
+        "The description should be short, specific, and realistic."
     ),
     tools=[],
     model="gpt-4.1-nano",
@@ -125,72 +126,68 @@ date_idea_agent = Agent(
 async def get_result_from_agent(
     location: str,
     date_str: str,
-    time_str: str = None,
-    partner_name: str = None,
-    partner_age: int = None,
-    partner_gender: str = None,
-    date_type: str = None,
-    budget: str = None,
-    interests: str = None
+    time_str: str | None = None,
+    partner_name: str | None = None,
+    partner_age: int | None = None,
+    partner_gender: str | None = None,
+    date_type: str | None = None,
+    budget: str | None = None,
+    interests: str | None = None
 ) -> DateIdeaOutput:
-    """Główna funkcja orchestrująca cały proces generowania randki."""
+    """Main orchestration function that coordinates the entire date‑generation process."""
 
     weather_summary = get_weather(location, date_str)
-    
-    # Create a standardized person description using all available information
-    person_description_parts = []
+
+    # Build a standardized partner description from available info
+    person_description_parts: List[str] = []
     if partner_name:
         person_description_parts.append(f"{partner_name}")
     if partner_age:
-        person_description_parts.append(f"{partner_age} lat")
+        person_description_parts.append(f"{partner_age} years old")
     if partner_gender:
         person_description_parts.append(partner_gender)
-    
-    # Set default description if no specific details provided
+
+    # Default description if no specific details provided
     if not person_description_parts:
-        person_description = "miła, energiczna osoba, lubiąca przygody"
+        person_description = "a friendly, energetic person who loves adventures"
     else:
         person_description = ", ".join(person_description_parts)
-    
-    # Format date and time information
+
+    # Combine date & time info
     datetime_info = date_str
     if time_str:
-        datetime_info = f"{date_str} o godz. {time_str}"
-    
-    # Format budget information
-    budget_info = ""
-    if budget:
-        budget_info = f"Budżet: {budget}"
-    
-    # Format date type information
-    date_type_info = ""
-    if date_type:
-        date_type_info = f"Typ randki: {date_type}"
+        datetime_info = f"{date_str} at {time_str}"
+
+    # Budget info
+    budget_info = f"Budget: {budget}" if budget else ""
+
+    # Date type info
+    date_type_info = f"Date type: {date_type}" if date_type else ""
 
     places_prompt = (
-        f"Lokalizacja: {location}\n"
-        f"Data i czas: {datetime_info}\n"
+        f"Location: {location}\n"
+        f"Date & time: {datetime_info}\n"
         f"{date_type_info}\n" if date_type else ""
         f"{budget_info}\n" if budget else ""
-        f"Zainteresowania: {interests}\n"
-        f"Pogoda: {weather_summary}\n"
-        "Proszę podaj listę propozycji miejsc pasujących do tych parametrów."
+        f"Interests: {interests}\n"
+        f"Weather: {weather_summary}\n"
+        "Please provide a list of suitable places matching these parameters."
     )
     places_result = await Runner.run(places_agent, input=places_prompt)
 
-    print ("Places calculated!")
+    print("Places calculated!")
     suggested_places = places_result.final_output
 
     date_prompt = (
-        f"Lokalizacja: {location}\n"
-        f"Data i czas: {datetime_info}\n"
-        f"Opis osoby: {person_description}\n"
+        f"Location: {location}\n"
+        f"Date & time: {datetime_info}\n"
+        f"Partner description: {person_description}\n"
         f"{date_type_info}\n" if date_type else ""
         f"{budget_info}\n" if budget else ""
-        f"Zainteresowania: {interests}\n"
-        f"Sugerowane miejsca: {suggested_places}\n"
-        f"Pogoda: {weather_summary}\n"
-        "Proszę zaproponuj pomysł na randkę."
+        f"Interests: {interests}\n"
+        f"Suggested places: {suggested_places}\n"
+        f"Weather: {weather_summary}\n"
+        "Please propose a date idea."
     )
     date_result = await Runner.run(date_idea_agent, input=date_prompt)
 

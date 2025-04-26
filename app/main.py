@@ -17,6 +17,11 @@ templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 load_dotenv()
 
+app.mount(
+    "/static",                           
+    StaticFiles(directory="app/static"),
+    name="static" 
+)
 
 @dataclass
 class PlaceV2:
@@ -29,7 +34,7 @@ class AppState:
         self.places_db: list[PlaceV2] = []
         self.liked_places: set[int] = set()
         self.disliked_places: set[int] = set()
-        self.last_form: DateForm | None = None  # Store last submitted form
+        self.last_form: DateForm | None = None
         self.current_place_info = None
 
     def clear_feedback(self):

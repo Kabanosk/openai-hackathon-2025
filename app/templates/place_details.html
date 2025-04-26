@@ -1,13 +1,13 @@
 <!-- Save this as app/templates/place_details.html -->
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Szczegóły randki</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+  <title>Date Details</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
@@ -32,7 +32,6 @@
       font-size: 2.5rem;
       color: white;
       text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin-bottom: 1.5rem;
       font-weight: 300;
       letter-spacing: 2px;
@@ -197,7 +196,7 @@
   </style>
 </head>
 <body>
-  <h1>Szczegóły randki</h1>
+  <h1>Date Details</h1>
 
   <div class="container">
     {% if place %}
@@ -210,7 +209,7 @@
           {{ place.dateIdeaOutput.description }}
         </div>
 
-        <h3 class="itinerary-title">Plan randki</h3>
+        <h3 class="itinerary-title">Date Itinerary</h3>
 
         {% for step in place.dateIdeaOutput.itinerary %}
           <div class="step-card">
@@ -230,13 +229,13 @@
             </div>
 
             <div class="step-price">
-              {{ step.price }} zł
+              {{ step.price }} PLN
             </div>
           </div>
         {% endfor %}
 
         <div class="budget-summary">
-          Łączny budżet: <span class="budget-amount">{{ place.dateIdeaOutput.budget_pln }} zł</span>
+          Total budget: <span class="budget-amount">{{ place.dateIdeaOutput.budget_pln }} PLN</span>
         </div>
         {% if place %}
         <a
@@ -252,13 +251,13 @@
         {% endif %}
       </div>
       {% if show %}
-      <a href="/places" class="back-button">Powrót do listy miejsc</a>
+      <a href="/places" class="back-button">Back to places list</a>
       {% endif %}
     {% else %}
       <div class="card">
-        <p>Nie znaleziono szczegółów dla tego miejsca.</p>
+        <p>No details found for this place.</p>
         {% if show %}
-        <a href="/places" class="back-button">Powrót do listy miejsc</a>
+        <a href="/places" class="back-button">Back to places list</a>
         {% endif %}
       </div>
     {% endif %}
