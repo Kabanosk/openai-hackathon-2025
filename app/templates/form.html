@@ -238,20 +238,18 @@
 
   <h2> Welcome back David! <br> With who would you like to discover something? </h2>
 
-  <div class="form-container">
-    <div class="form-group"> 
-      <select id="saved-people" name="saved-people">
-        <option value ="">Select a saved person</option>
-        <option value="Zuzia">Zuzia</option>
-        <option value="Wojtek">Wojtek</option>
-      </select> 
-    </div>
-  </div>
-
-
-
 
   <form action="/submit-date-form" method="post" class="form-container">
+      <div class="form-group">
+        <label for="person">Friend</label>
+        <select id="saved-people" name="saved-people">
+          <option value ="">Select a saved person</option>
+          <option value="Zuzia">Zuzia</option>
+          <option value="Wojtek">Wojtek</option>
+        </select>
+      </div>
+    </div>
+
     <div class="form-group">
       <label for="name">Partner's name:</label>
       <input type="text" id="name" name="name" placeholder="">
@@ -317,20 +315,6 @@
 
     <button type="submit" class="search-button">Search</button>
   </form>
-
-  <!-- Menu Button -->
-  <button class="menu-button" id="menuButton">☰</button>
-
-  <!-- Menu Container -->
-  <div class="menu-container" id="menuContainer">
-    <div class="menu-content">
-      <button class="menu-close" id="menuClose">✕</button>
-      <ul class="menu-list">
-        <li><a href="#saved-people">Saved People</a></li>
-        <li><a href="#previous-dates">Previous Dates</a></li>
-      </ul>
-    </div>
-  </div>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
