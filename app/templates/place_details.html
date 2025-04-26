@@ -150,43 +150,6 @@
       margin-top: 1.5rem;
     }
 
-    .calendar-button {
-        position: relative;
-        background-color: white;
-        color: #333;
-        border: none;
-        border-radius: 30px;
-        padding: 0.75rem 2rem;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 1.5rem;
-        z-index: 0;
-        overflow: hidden;
-    }
-
-    .calendar-button::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        padding: 2px; /* Border thickness */
-        border-radius: 30px;
-        background: linear-gradient(to right, #6a87cf, #a6c1ee);
-        -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-                mask-composite: exclude;
-        z-index: -1;
-    }
-
-    .calendar-button:hover {
-        background-color: #f0f4ff;
-        transform: scale(1.05);
-    }
-
     .reserved-button {
         position: relative;
         background-color: white;
@@ -233,31 +196,20 @@
       align-items: center;
     }
 
-    .bell-icon {
-      margin-left: 0.5rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+    .bell-icon{margin-left:.5rem;cursor:pointer;transition:.3s;border:2px solid #6a87cf;border-radius:50%;padding:4px;position:relative}
+    .bell-icon::before{content:"";position:absolute;inset:0;padding:2px;border-radius:30px;background:linear-gradient(to right,#6a87cf,#a6c1ee);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:-1}
+    .bell-icon:hover{background:#f0f4ff;transform:scale(1.2)}
+    /* ---------- Bell cross toggle ---------- */
+    .cross-line{display:none}
+    .muted .cross-line{display:block}
+    /* ---------- Bell ring animation ---------- */
+    @keyframes ring{0%{transform:rotate(0deg)}15%{transform:rotate(15deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0deg)}}
+    .shake{animation:ring .7s ease-in-out;transform-origin:top center}
 
-    .bell-icon::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        padding: 2px; /* Border thickness */
-        border-radius: 30px;
-        background: linear-gradient(to right, #6a87cf, #a6c1ee);
-        -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-                mask-composite: exclude;
-        z-index: -1;
+    @keyframes ring{
+      0%{transform:rotate(0deg)}15%{transform:rotate(15deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0deg)}
     }
-
-    .bell-icon:hover {
-      background-color: #f0f4ff;
-      transform: scale(1.2);
-    }
+    .shake{animation:ring .7s ease-in-out;transform-origin:top center}
 
 
   </style>
@@ -272,9 +224,19 @@
 
       setTimeout(function() {
         button.textContent = "Reserved";
+        // Automatically open Google Calendar after reservation completes
+        const calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text={{ place.dateIdeaOutput.title | urlencode }}&details={{ place.dateIdeaOutput.description | urlencode }}&location={{ place.dateIdeaOutput.itinerary[0].place_address | urlencode }}&dates={{ calendar_dates }}";
+        window.open(calendarUrl, "_blank");
       }, 3000);
     }
     // Zielu TODO connect with the agent, change the state when the agent returns a response
+    function ringBell(svg){
+      svg.classList.add('shake');
+      svg.classList.toggle('muted');
+      // update tooltip for accessibility
+      svg.setAttribute('title', svg.classList.contains('muted') ? 'Notifications off' : 'Notifications on');
+      setTimeout(()=>svg.classList.remove('shake'),700);
+    }
   </script>
 
 
@@ -292,8 +254,9 @@
         </div>
 
         <h3 class="itinerary-title">Meetup Itinerary</h3>
-
+        {% set ns = namespace(total=0) %}
         {% for step in place.dateIdeaOutput.itinerary %}
+          {% set ns.total = ns.total + step.price %}
           <div class="step-card">
             <div class="step-header">
               <span class="step-time">{{ step.time }}</span>
@@ -314,11 +277,16 @@
               {% if step.price > 0 %}
               <div class="reserve-container">
                 <button class="reserved-button" onclick="reservePlace(this)">Reserve</button>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="20" height="20" class="bell-icon">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159a2.032 2.032 0 01-.595 1.437L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                 <!-- Bell starts muted (cross visible) -->
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="24" height="24" class="bell-icon muted" onclick="ringBell(this)" title="Notifications off" aria-label="Toggle notifications">
+                  <!-- Bell outline -->
+                  <path fill="none" stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159a2.032 2.032 0 01-.595 1.437L4 17h5" />
+                  <path fill="none" stroke-linecap="round" stroke-linejoin="round" d="M9 17v1a3 3 0 006 0v-1" />
+                  <!-- Cross line hidden until .muted removed -->
+                  <line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="2" class="cross-line" />
                 </svg>
               </div>
-            {% endif %}
+              {% endif %}
 
 
               {{ step.price }} PLN
@@ -326,22 +294,7 @@
             </div>
           </div>
         {% endfor %}
-
-        <div class="budget-summary">
-          Total budget: <span class="budget-amount">{{ place.dateIdeaOutput.budget_pln }} PLN</span>
-        </div>
-        {% if place %}
-        <a
-            href="https://www.google.com/calendar/render?action=TEMPLATE&text={{ place.dateIdeaOutput.title | urlencode }}&details={{ place.dateIdeaOutput.description | urlencode }}&location={{ place.dateIdeaOutput.itinerary[0].place_address | urlencode }}&dates={{ calendar_dates }}"
-            target="_blank"
-            class="calendar-button"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="20" height="20" style="vertical-align: middle; margin-right: 0.5rem;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Add to Google Calendar
-        </a>
-        {% endif %}
+        <div class="budget-summary">Total budget: <span class="budget-amount">{{ ns.total }} PLN</span></div>
       </div>
       {% if show %}
       <a href="/places" class="back-button">Back to places list</a>
