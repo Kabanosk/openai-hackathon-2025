@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
-  <title>Date Genius</title>
+  <title>Place holder</title>
   <style>
     body {
       margin: 0;
@@ -37,6 +37,14 @@
       font-weight: 300;
       letter-spacing: 4px;
       margin: 0; /* remove default margin so flex alignment is nicer */
+    }
+    h2 {
+      font-size: 1.5rem;
+      color: white;
+      text-align: center;
+      /* margin-bottom: 2rem; */
+      font-weight: 300;
+      letter-spacing: 2px;
     }
 
     .form-container {
@@ -224,9 +232,24 @@
   <!-- Header with logo + title -->
   <div class="header">
     <img src="{{ url_for('static', path='images/logo.svg') }}" alt="Date Genius logo" class="logo">
-    <h1>Date Genius</h1>
+    <h1>Placeholder</h1>
     <img src="{{ url_for('static', path='images/logo.svg') }}" alt="Date Genius logo" class="logo">
   </div>
+
+  <h2> Welcome back David! <br> With who would you like to discover something? </h2>
+
+  <div class="form-container">
+    <div class="form-group"> 
+      <select id="saved-people" name="saved-people">
+        <option value ="">Select a saved person</option>
+        <option value="Zuzia">Zuzia</option>
+        <option value="Wojtek">Wojtek</option>
+      </select> 
+    </div>
+  </div>
+
+
+
 
   <form action="/submit-date-form" method="post" class="form-container">
     <div class="form-group">
