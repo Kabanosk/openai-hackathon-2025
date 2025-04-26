@@ -227,13 +227,12 @@
         // Automatically open Google Calendar after reservation completes
         const calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text={{ place.dateIdeaOutput.title | urlencode }}&details={{ place.dateIdeaOutput.description | urlencode }}&location={{ place.dateIdeaOutput.itinerary[0].place_address | urlencode }}&dates={{ calendar_dates }}";
         window.open(calendarUrl, "_blank");
-      }, 3000);
+      }, 2000);
     }
-    // Zielu TODO connect with the agent, change the state when the agent returns a response
+    // TODO Zielu connect with the agent, change the state when the agent returns a response
     function ringBell(svg){
       svg.classList.add('shake');
       svg.classList.toggle('muted');
-      // update tooltip for accessibility
       svg.setAttribute('title', svg.classList.contains('muted') ? 'Notifications off' : 'Notifications on');
       setTimeout(()=>svg.classList.remove('shake'),700);
     }
