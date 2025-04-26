@@ -110,7 +110,7 @@
     <div class="form-row">
       <div class="form-group">
         <label for="age">Wiek partnerki/partnera:</label>
-        <input type="number" id="age" name="age" min="18" required>
+        <input type="number" id="age" name="age" min="7" required>
       </div>
 
       <div class="form-group">
@@ -167,5 +167,33 @@
 
     <button type="submit" class="search-button">wyszukaj</button>
   </form>
+    <div id="loading-modal" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  ">
+    <div style="
+      background: white;
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+    ">
+      ⏳ Trwa generowanie propozycji randki...
+    </div>
+  </div>
+
+  <script>
+    document.querySelector("form").addEventListener("submit", function () {
+      document.getElementById("loading-modal").style.display = "flex";
+    });
+  </script>
 </body>
 </html>

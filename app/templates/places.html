@@ -110,8 +110,8 @@
     {% if places %}
       {% for place in places %}
         <div class="place-card">
-          <h2>{{ place.title }}</h2>
-          <p>{{ place.description }}</p>
+          <h2>{{ place.dateIdeaOutput.title }}</h2>
+          <p>{{ place.dateIdeaOutput.description }}</p>
           <div class="button-group">
             <form action="/like-place" method="post" style="display: inline;">
               <input type="hidden" name="place_id" value="{{ place.id }}">
