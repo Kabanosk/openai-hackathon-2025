@@ -65,16 +65,20 @@
     }
     textarea{resize:vertical;min-height:90px;}
 
-    /* -------- three-column row --------------------------------------- */
+    /* -------- date & time row --------------------------------------- */
     .row{
       display:flex;
       gap:1rem;
       flex-wrap:wrap;
     }
-    /* exactly one-third each, stop them from growing wider */
+    /* make date and time each take 1/2 space (together), party size next */
     .row>.col{
-      flex:0 0 calc(33.333% - 0.67rem);
-      max-width:calc(33.333% - 0.67rem);
+      flex:0 0 calc(50% - 0.67rem);    /* Date + Time take 50% of row width */
+      max-width:calc(50% - 0.67rem);
+    }
+    .row>.col.party-size{  /* Party size will still take full row width */
+      flex:0 0 100%;
+      max-width:100%;
     }
 
     /* ---------- button ---------------------------------------------- */
@@ -108,16 +112,14 @@
     </div>
 
     <!-- date / time / party size -->
+    <div class="form-group">
+      <label for="date_time">Date and time:</label>
+        <input type="datetime-local" id="date_time" name="date_time" required>
+      </div>
+    </div>
+
     <div class="row">
-      <div class="col">
-        <label for="date">Date</label>
-        <input id="date" name="date" type="date" required>
-      </div>
-      <div class="col">
-        <label for="time">Time</label>
-        <input id="time" name="time" type="time" required>
-      </div>
-      <div class="col">
+      <div class="col party-size">
         <label for="party">Party&nbsp;size</label>
         <input id="party" name="party_size" type="number" min="1" value="2" required>
       </div>

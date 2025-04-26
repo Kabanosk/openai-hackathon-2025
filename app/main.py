@@ -104,14 +104,13 @@ async def show_reserve(request: Request):
 @app.post("/submit-reservation")
 async def submit_reservation(
     location: str = Form(...),
-    date: datetime = Form(...),
-    time: datetime = Form(...),
+    date_time: datetime = Form(...),
     party_size: int = Form(...),
     budget: str = Form(...),
     special_requests: str | None = Form(None)
 ):
     # TODO: send confirmation / call booking API
-    print("reservation:", location, date, time, party_size, budget, special_requests)
+    print("reservation:", location, date_time, party_size, budget, special_requests)
     return RedirectResponse(url="/", status_code=303)
 
 @app.get("/discover", response_class=HTMLResponse)
