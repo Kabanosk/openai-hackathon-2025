@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Plan Your Date</title></head>
+<body>
+    <h1>Plan Your Date</h1>
+    <form action="/submit-date-form" method="post">
+        Age: <input type="number" name="age"><br><br>
+        Interests (comma separated): <input type="text" name="interests"><br><br>
+        Date and Time: <input type="datetime-local" name="date_time"><br><br>
+        City: <input type="text" name="city"><br><br>
+        Date Type:
+        <select name="date_type">
+            <option value="first">First Date</option>
+            <option value="anniversary">Anniversary</option>
+            <option value="casual">Casual</option>
+        </select><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

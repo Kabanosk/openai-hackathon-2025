@@ -2,15 +2,23 @@
 name = "openai-hackathon-2025"
 version = "0.1.0"
 description = ""
-authors = ["kabanosk <56364007+Kabanosk@users.noreply.github.com>"]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+jinja2 = "^3.1.6"
+pydantic = "^2.11.3"
+openai-agents = "^0.0.13"
 openai = "^1.76.0"
-openai-agents = {extras = ["voice"], version = "^0.0.13"}
-chess = "^1.11.2"
+python-multipart = "^0.0.20"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]
