@@ -117,6 +117,17 @@ date_idea_agent = Agent(
     output_type=DateIdeaOutput
 )
 
+reservation_agent = Agent(
+    name="Reservation Finder",
+    instructions=(
+        "You are an agent that finds available dates and makes reservation. "
+        "Using web.search, find tickes or first available date, "
+        "tailored to the user's interests, meetup type, budget, and time of day. "
+    ),
+    tools=[WebSearchTool()],
+    model="gpt-4.1",
+    model_settings=ModelSettings(tool_choice="required"),
+)
 
 # ----------------------------------------------------------------------------
 # Main Logic
