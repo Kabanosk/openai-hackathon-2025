@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from app.models import DateForm, Place
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
 
 # Mock agent storage (replace with real later)
 places_db = [
