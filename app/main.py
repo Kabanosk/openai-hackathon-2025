@@ -100,8 +100,8 @@ async def check_reservation_availability(location, date_time, party_size, budget
 
     places_prompt = (
         f"Location: {location}\n"
-        f"date_str: { date_time.strftime("%Y-%m-%d")}\n"
-        f"time_str: {date_time.strftime("%H:%M")}\n"
+        f"date_str: { date_time.strftime('%Y-%m-%d')}\n"
+        f"time_str: {date_time.strftime('%H:%M')}\n"
         f"party_size: {party_size}\n"
         f"budget: {budget}\n"
     )
