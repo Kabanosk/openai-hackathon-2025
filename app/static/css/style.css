@@ -6,6 +6,6 @@
     font-style: normal;
   }
 
-body {
-    font-family: "MelonCamp", sans-serif;   
+body, .recalculate-button, .search-button {
+    font-family: "MelonCamp", sans-serif;
     }

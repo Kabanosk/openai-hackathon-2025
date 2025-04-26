@@ -91,8 +91,9 @@
     }
 
     .step-place {
-      font-size: 1.2rem;
-      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .step-address {
@@ -115,11 +116,13 @@
       line-height: 1.5;
     }
 
+
     .step-price {
-      text-align: right;
-      margin-top: 0.8rem;
-      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
 
     .budget-summary {
       font-size: 1.2rem;
@@ -184,6 +187,42 @@
         transform: scale(1.05);
     }
 
+    .reserved-button {
+        position: relative;
+        background-color: white;
+        color: #333;
+        border: none;
+        border-radius: 30px;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        z-index: 0;
+        overflow: hidden;
+    }
+
+    .reserved-button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px; /* Border thickness */
+        border-radius: 30px;
+        background: linear-gradient(to right, #6a87cf, #a6c1ee);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+                mask-composite: exclude;
+        z-index: -1;
+    }
+
+    .reserved-button:hover {
+        background-color: #f0f4ff;
+        transform: scale(1.05);
+    }
+
     .back-button:hover {
       background-color: #f0f0f0;
       transform: scale(1.05);
@@ -191,6 +230,21 @@
   </style>
 </head>
 <body>
+  <script>
+    function reservePlace(button) {
+      button.textContent = "Reserving...";
+      button.disabled = true;
+      button.style.backgroundColor = "#d3d3d3";
+      button.style.cursor = "not-allowed";
+
+      setTimeout(function() {
+        button.textContent = "Reserved";
+      }, 3000);
+    }
+    // Zielu TODO połącz z agentem, zmień stan kiedy agent zwróci respone?
+  </script>
+
+
   <h1>Date Details</h1>
 
   <div class="container">
@@ -224,7 +278,11 @@
             </div>
 
             <div class="step-price">
+              {% if step.price > 0 %}
+              <button class="reserved-button" onclick="reservePlace(this)">Reserve</button>
+              {% endif %}
               {{ step.price }} PLN
+
             </div>
           </div>
         {% endfor %}
