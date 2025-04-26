@@ -117,6 +117,95 @@
       cursor: pointer;
       opacity: 0.8;
     }
+
+    /* Menu Styles */
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: white;
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    .menu-container {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100vh;
+      background-color: white;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s ease;
+      z-index: 999;
+    }
+
+    .menu-container.open {
+      right: 0;
+    }
+
+    .menu-content {
+      padding: 2rem;
+    }
+
+    .menu-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .menu-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 3rem;
+    }
+
+    .menu-list li {
+      margin-bottom: 1rem;
+    }
+
+    .menu-list a {
+      display: block;
+      padding: 1rem;
+      text-decoration: none;
+      color: #333;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .menu-list a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      display: none;
+    }
+
+    .overlay.open {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -189,6 +278,24 @@
     <button type="submit" class="search-button">wyszukaj</button>
   </form>
 
+  <!-- Menu Button -->
+  <button class="menu-button" id="menuButton">☰</button>
+
+  <!-- Menu Container -->
+  <div class="menu-container" id="menuContainer">
+    <div class="menu-content">
+      <button class="menu-close" id="menuClose">✕</button>
+      <ul class="menu-list">
+        <li><a href="#saved-people">Saved People</a></li>
+        <li><a href="#previous-dates">Previous Dates</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Loading Modal -->
   <div id="loading-modal" style="
     display: none;
     position: fixed;
@@ -216,6 +323,30 @@
   <script>
     document.querySelector("form").addEventListener("submit", function() {
       document.getElementById("loading-modal").style.display = "flex";
+    });
+
+    // Menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const menuContainer = document.getElementById('menuContainer');
+    const menuClose = document.getElementById('menuClose');
+    const overlay = document.getElementById('overlay');
+
+    // Open menu
+    menuButton.addEventListener('click', function() {
+      menuContainer.classList.add('open');
+      overlay.classList.add('open');
+    });
+
+    // Close menu
+    menuClose.addEventListener('click', function() {
+      menuContainer.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    // Close menu if clicking outside
+    overlay.addEventListener('click', function() {
+      menuContainer.classList.remove('open');
+      overlay.classList.remove('open');
     });
   </script>
 </body>

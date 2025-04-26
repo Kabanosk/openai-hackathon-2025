@@ -30,6 +30,7 @@ class AppState:
         self.liked_places: set[int] = set()
         self.disliked_places: set[int] = set()
         self.last_form: DateForm | None = None  # Store last submitted form
+        self.current_place_info = None
 
     def clear_feedback(self):
         self.liked_places.clear()
@@ -44,8 +45,13 @@ class AppState:
         self.liked_places.discard(place_id)
 
     def info_place(self, place_id: int):
-        # @ZIELU TODO
-        ...
+        print(f"LOOK FOR ID {place_id}")
+        for place in self.places_db:
+            if place.id == place_id:
+                print(f"FOUND {place_id}")
+                self.current_place_info = place
+                return place
+        return None
 
     def get_available_places(self):
         return [p for p in self.places_db if p.id not in self.disliked_places]
@@ -151,8 +157,17 @@ async def dislike_place(place_id: int = Form(...)):
 @app.post("/info-place")
 async def info_place(place_id: int = Form(...)):
     state.info_place(place_id)
-    return RedirectResponse(url="/places", status_code=303)
+    return RedirectResponse(url="/place-details", status_code=303)
 
+@app.get("/place-details", response_class=HTMLResponse)
+async def get_place_details(request: Request):
+    return templates.TemplateResponse(
+        "place_details.html",
+        {
+            "request": request,
+            "place": state.current_place_info,
+        },
+    )
 
 @app.post("/recalculate-places")
 async def recalculate_places():
