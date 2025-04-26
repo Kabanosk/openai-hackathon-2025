@@ -141,8 +141,8 @@ async def submit_form(
         budget=budget,
     )
 
-    # state.last_form = form_data  # Save the form for recalculation
-    # state.clear_feedback()
+    state.last_form = form_data  # Save the form for recalculation
+    state.clear_feedback()
     state.places_db = await get_all_places(
         city=form_data.city,
         date_time=form_data.date_time,

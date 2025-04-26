@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+  <style>
+    :root{
+      --bg-top:#a6c1ee;
+      --bg-bot:#fbc2eb;
+      --btn-main:#ffffffcc;
+      --btn-hover:#ffffffee;
+      --txt-dark:#333;
+    }
+    body{
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:3rem;
+      min-height:100vh;
+      padding:1.5rem;
+      background:linear-gradient(to bottom,var(--bg-top),var(--bg-bot));
+      color:var(--txt-dark);
+      text-align:center;
+    }
+
+    /* ––– logo ––– */
+    .logo svg{
+      width:200px;          /* keeps aspect ratio */
+      max-width:60vw;
+      height:auto;
+      display:block;
+    }
+    /* remove the black rect background in the supplied SVG */
+    .logo rect[fill="#1E1E1E"]{fill:transparent}
+
+    h1{
+      font-size:clamp(1.7rem,4vw,2.5rem);
+      font-weight:300;
+      letter-spacing:1px;
+      line-height:1.3;
+      color:#fff;
+      max-width:22ch;
+      margin:0 auto;
+    }
+
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:2.5rem;
+      justify-content:center;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      position:relative;
+      padding:1.3rem 3.2rem;
+      border-radius:50px;
+      font-size:1.25rem;
+      font-weight:600;
+      color:var(--txt-dark);
+      background:var(--btn-main);
+      backdrop-filter:blur(4px);
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
+      transition:transform .25s,box-shadow .25s;
+      font-family:"MelonCamp";
+    }
+    .btn:hover{
+      transform:translateY(-4px);
+      box-shadow:0 12px 24px rgba(0,0,0,.18);
+      background:var(--btn-hover);
+    }
+    .btn::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:inherit;
+      padding:2px;
+      background:linear-gradient(135deg,var(--bg-top),var(--bg-bot));
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;
+              mask-composite:exclude;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- logo block -->
+  <div class="logo">
+    <svg viewBox="0 0 200 298" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="298" fill="#1E1E1E"/>
+      <path d="M99.5 248C113.924 248 125 258.623 125 271C125 283.377 113.924 294 99.5 294C85.076 294 74 283.377 74 271C74 258.623 85.076 248 99.5 248Z" fill="#B07CF2" stroke="#4B2084" stroke-width="8"/>
+      <rect x="54" y="218" width="91" height="52" rx="12" fill="#B07CF2" stroke="#4B2084" stroke-width="8"/>
+      <rect x="58" y="236" width="83" height="16" fill="#4B2084"/>
+      <path d="M60.0008 201L65.0008 217H134.001L140.001 201L161.501 175.5L184.001 151C213.366 98.1426 182.575 63.2559 144.501 64C106.426 64.7441 103.502 82.5001 99.0008 84C94.5 85.4999 105.001 72.5 57.0008 64C9.00055 55.5 -12.9991 121.5 15.0008 151C43.0008 180.5 42.0008 180 42.0008 180L60.0008 201Z" fill="#FD72A1" stroke="#FD72A1"/>
+      <path d="M65.993 218.823C62.4928 182.284 -3.14794 157.556 2.35251 110.556C7.85297 63.5564 64.9933 44.3225 100.493 85.3226" stroke="#4B2084" stroke-width="4"/>
+      <path d="M133.993 218.823C137.493 182.284 202.513 157.556 197.012 110.556C191.512 63.5565 133.993 44.3225 98.493 85.3226" stroke="#4B2084" stroke-width="4"/>
+      <line x1="63.993" y1="219.823" x2="135.993" y2="219.823" stroke="#4B2084" stroke-width="4"/>
+      <path d="M89.9961 219.684C101.186 163.787 61.3468 162.838 64.9129 141.9C68.4791 120.962 90.177 118.881 101.231 139" stroke="#4B2084" stroke-width="4"/>
+      <path d="M111.721 219.662C100.721 164.938 140.24 163.938 136.74 143.438C133.24 122.938 111.721 120.938 100.721 140.662" stroke="#4B2084" stroke-width="4"/>
+      <path d="M38 24.5L50 42" stroke="#FD72A1" stroke-width="12" stroke-linecap="round"/>
+      <path d="M99.5 6V30M160.5 24.5L148.5 42.5" stroke="#FD72A1" stroke-width="12" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <h1>Welcome back {{ user_name }}!<br>Who would you like to discover something with?</h1>
+
+  <div class="buttons">
+    <form action="/discover" method="get">
+      <button type="submit" class="btn">Let's explore</button>
+    </form>
+    <form action="/reserve" method="get">
+      <button type="submit" class="btn">Reserve</button>
+    </form>
+  </div>
+</body>
+</html>
