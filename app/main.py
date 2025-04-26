@@ -1,5 +1,5 @@
+from __future__ import annotations
 from datetime import datetime, timedelta
-
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -12,16 +12,14 @@ from typing import List, Optional
 from app.agent import get_result_from_agent, DateIdeaOutput
 from app.models import DateForm
 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 load_dotenv()
 
-app.mount(
-    "/static",
-    StaticFiles(directory="app/static"),
-    name="static"
-)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 @dataclass
 class PlaceV2:
@@ -71,7 +69,7 @@ async def get_all_places(
     partner_gender: Optional[str] = None,
     interests: Optional[List[str]] = None,
     date_type: Optional[str] = None,
-    budget: Optional[str] = None
+    budget: Optional[str] = None,
 ) -> list[PlaceV2]:
     tasks = [
         get_result_from_agent(
@@ -83,19 +81,24 @@ async def get_all_places(
             partner_gender=partner_gender,
             date_type=date_type,
             budget=budget,
-            interests=", ".join(interests) if interests else ""
+            interests=", ".join(interests) if interests else "",
         )
         for _ in range(3)
     ]
     results = await asyncio.gather(*tasks)
 
-    return [
-        PlaceV2(id=i, dateIdeaOutput=result)
-        for i, result in enumerate(results)
-    ]
+    return [PlaceV2(id=i, dateIdeaOutput=result) for i, result in enumerate(results)]
 
 
 @app.get("/", response_class=HTMLResponse)
+async def welcome(request: Request):
+    """Landing page with two options."""
+    return templates.TemplateResponse(
+        "welcome.html", {"request": request, "user_name": "David"}
+    )
+
+
+@app.get("/discover", response_class=HTMLResponse)
 async def get_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
 
@@ -132,7 +135,7 @@ async def submit_form(
         partner_gender=form_data.gender,
         interests=form_data.interests,
         date_type=form_data.date_type,
-        budget=form_data.budget
+        budget=form_data.budget,
     )
 
     return RedirectResponse(url="/places", status_code=303)
@@ -140,10 +143,13 @@ async def submit_form(
 
 @app.get("/places", response_class=HTMLResponse)
 async def get_places(request: Request):
-    return templates.TemplateResponse("places.html", {
-        "request": request,
-        "places": state.get_available_places(),
-    })
+    return templates.TemplateResponse(
+        "places.html",
+        {
+            "request": request,
+            "places": state.get_available_places(),
+        },
+    )
 
 
 @app.post("/like-place")
@@ -158,10 +164,7 @@ async def like_place(place_id: int = Form(...)):
 
 
 @app.post("/dislike-place")
-async def dislike_place(
-    place_id: int = Form(...),
-    reason: str | None = Form(None)
-):
+async def dislike_place(place_id: int = Form(...), reason: str | None = Form(None)):
     state.dislike_place(place_id)
     if reason:
         print(f"[feedback] user disliked {place_id}: {reason}")
@@ -169,10 +172,12 @@ async def dislike_place(
 
     return RedirectResponse(url="/places", status_code=303)
 
+
 @app.post("/info-place")
 async def info_place(place_id: int = Form(...)):
     state.info_place(place_id)
     return RedirectResponse(url="/place-details", status_code=303)
+
 
 @app.get("/place-details", response_class=HTMLResponse)
 async def get_place_details(request: Request, show: str = "true"):
@@ -186,7 +191,9 @@ async def get_place_details(request: Request, show: str = "true"):
         end_time = datetime.strptime(itinerary[-1].time, fmt) + timedelta(hours=1)
 
         now = datetime.utcnow()
-        start_utc = datetime(now.year, now.month, now.day, start_time.hour, start_time.minute)
+        start_utc = datetime(
+            now.year, now.month, now.day, start_time.hour, start_time.minute
+        )
         end_utc = datetime(now.year, now.month, now.day, end_time.hour, end_time.minute)
 
         start_str = start_utc.strftime("%Y%m%dT%H%M%SZ")
@@ -201,9 +208,10 @@ async def get_place_details(request: Request, show: str = "true"):
             "request": request,
             "place": place,
             "show": show_bool,
-            "calendar_dates": calendar_dates
+            "calendar_dates": calendar_dates,
         },
     )
+
 
 @app.post("/recalculate-places")
 async def recalculate_places():
@@ -219,7 +227,7 @@ async def recalculate_places():
         partner_gender=state.last_form.gender,
         interests=state.last_form.interests,
         date_type=state.last_form.date_type,
-        budget=state.last_form.budget
+        budget=state.last_form.budget,
     )
 
     return RedirectResponse(url="/places", status_code=303)

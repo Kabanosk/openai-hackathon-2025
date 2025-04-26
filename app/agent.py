@@ -13,6 +13,7 @@ from agents.model_settings import ModelSettings
 # Data Models
 # ----------------------------------------------------------------------------
 
+
 @dataclass
 class DateStep:
     time: str
@@ -21,6 +22,7 @@ class DateStep:
     transport: str
     description: str
     price: int
+
 
 @dataclass
 class DateIdeaOutput:
@@ -34,14 +36,11 @@ class DateIdeaOutput:
 # Weather Utility
 # ----------------------------------------------------------------------------
 
+
 def geocode_city(city_name: str) -> tuple[float, float]:
     """Returns geographic coordinates (lat, lon) for a given city name."""
     url = "https://nominatim.openstreetmap.org/search"
-    params = {
-        "q": city_name,
-        "format": "json",
-        "limit": 1
-    }
+    params = {"q": city_name, "format": "json", "limit": 1}
     headers = {
         "User-Agent": "DatePlannerApp/1.0 (contact@yourdomain.com)"  # <-- Replace with your contact info
     }
@@ -123,6 +122,7 @@ date_idea_agent = Agent(
 # Main Logic
 # ----------------------------------------------------------------------------
 
+
 async def get_result_from_agent(
     location: str,
     date_str: str,
@@ -132,7 +132,7 @@ async def get_result_from_agent(
     partner_gender: str | None = None,
     date_type: str | None = None,
     budget: str | None = None,
-    interests: str | None = None
+    interests: str | None = None,
 ) -> DateIdeaOutput:
     """Main orchestration function that coordinates the entire date‑generation process."""
 
@@ -167,11 +167,16 @@ async def get_result_from_agent(
     places_prompt = (
         f"Location: {location}\n"
         f"Date & time: {datetime_info}\n"
-        f"{date_type_info}\n" if date_type else ""
-        f"{budget_info}\n" if budget else ""
-        f"Interests: {interests}\n"
-        f"Weather: {weather_summary}\n"
-        "Please provide a list of suitable places matching these parameters."
+        f"{date_type_info}\n"
+        if date_type
+        else (
+            "" f"{budget_info}\n"
+            if budget
+            else ""
+            f"Interests: {interests}\n"
+            f"Weather: {weather_summary}\n"
+            "Please provide a list of suitable places matching these parameters."
+        )
     )
     places_result = await Runner.run(places_agent, input=places_prompt)
 
@@ -182,12 +187,17 @@ async def get_result_from_agent(
         f"Location: {location}\n"
         f"Date & time: {datetime_info}\n"
         f"Partner description: {person_description}\n"
-        f"{date_type_info}\n" if date_type else ""
-        f"{budget_info}\n" if budget else ""
-        f"Interests: {interests}\n"
-        f"Suggested places: {suggested_places}\n"
-        f"Weather: {weather_summary}\n"
-        "Please propose a meetup idea."
+        f"{date_type_info}\n"
+        if date_type
+        else (
+            "" f"{budget_info}\n"
+            if budget
+            else ""
+            f"Interests: {interests}\n"
+            f"Suggested places: {suggested_places}\n"
+            f"Weather: {weather_summary}\n"
+            "Please propose a meetup idea."
+        )
     )
     date_result = await Runner.run(date_idea_agent, input=date_prompt)
 

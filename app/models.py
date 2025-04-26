@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class DateForm:
     age: int
@@ -14,6 +15,7 @@ class DateForm:
     name: Optional[str] = None
     gender: Optional[str] = None
     budget: Optional[str] = None
+
 
 class Place(BaseModel):
     id: int
